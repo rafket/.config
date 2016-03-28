@@ -1,0 +1,4 @@
+startup_message off
+vbell off
+hardstatus alwayslastline
+hardstatus string "%= %c %d-%m-%Y"
