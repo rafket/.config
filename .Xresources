@@ -1,6 +1,6 @@
 !xterm
 
-xterm*geometry: 85*25
+xterm*geometry: 85x25
 
 xterm*utf8: 1
 xterm*locale: true
