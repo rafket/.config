@@ -1,0 +1,79 @@
+# Create own window instead of using desktop (required in nautilus)
+own_window yes
+own_window_type override
+own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
+ 
+# Use double buffering (reduces flicker, may not work for everyone)
+double_buffer yes
+ 
+# fiddle with window
+use_spacer right
+
+# Use Xft?
+use_xft yes
+xftfont DejaVu Sans:size=8
+xftalpha 0.8
+text_buffer_size 2048
+ 
+# Update interval in seconds
+update_interval 0.5
+ 
+# Minimum size of text area
+# minimum_size 250 5
+ 
+# Draw shades?
+draw_shades no
+ 
+# Text stuff
+draw_outline no # amplifies text if yes
+draw_borders no
+uppercase no # set to yes if you want all text to be in uppercase
+ 
+# Stippled borders?
+stippled_borders 3
+ 
+# border margins
+border_margin 9
+ 
+# border width
+border_width 10
+ 
+# Default colors and also border colors, grey90 == #e5e5e5
+default_color grey
+ 
+own_window_transparent no
+own_window_colour 272822
+ 
+# Text alignment, other possible values are commented
+#alignment top_left
+#alignment top_right
+#alignment bottom_left
+alignment bottom_right
+ 
+# Gap between borders of screen and text
+gap_x 10
+gap_y 10
+ 
+# stuff after 'TEXT' will be formatted on screen
+ 
+TEXT
+$color
+${color orange}CPU ${hr 2}$color
+${freq}MHz   Load: ${loadavg}   Temp: ${acpitemp}
+${cpubar cpu1}
+${cpubar cpu2}
+${cpubar cpu3}
+${cpubar cpu4}
+${cpugraph cpu0 000000 ffffff}
+ 
+${color orange}NETWORK (${addr eth0}) ${hr 2}$color
+Down: $color${downspeed eth0} k/s ${alignr}Up: ${upspeed eth0} k/s
+${downspeedgraph eth0 25,140 000000 ff0000} ${alignr}${upspeedgraph eth0 
+25,140 000000 00ff00}$color
+Total: ${totaldown eth0} ${alignr}Total: ${totalup eth0}
+${execi 30 netstat -ept | grep ESTAB | awk '{print $9}' | cut -d: -f1 | sort | uniq -c | sort -nr}
+${color orange}LOGGING ${hr 2}$color
+${execi 30 tail -n3 /var/log/syslog | awk '{print " ",$5,$6,$7,$8,$9,$10}' | fold -w50}
+ 
+${color orange}UPCOMING CONTESTS ${hr 2}$color
+${execi 300 ~/.conky/rss/rss.sh | fold -w50}
