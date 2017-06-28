@@ -1,5 +1,8 @@
 #!/bin/bash
 
+exec 3<> $HOME/.config/i3/.volume-notification-lock
+flock -x -F 3
+
 VOLUME=$(pactl list sinks | grep -A15 -P "(\#|№)$SINK" | grep -P "\d+\s*\/\s*\d+\%" | head -1 | awk "{print \$5}")
 if [[ "${1:0:1}" = "+" || "${1:0:1}" = "-" ]]
 then
@@ -34,11 +37,13 @@ NOTIFY_ARGS=(--session
 
 HINTS="{\"value\": <int32 $VOLUME>}"
 REPLACE_ID=0
-if [ -f $HOME/.config/i3/.volume-notification-lock ]
+if [ -s $HOME/.config/i3/.volume-notification-lock ]
 then
     REPLACE_ID=$(< $HOME/.config/i3/.volume-notification-lock)
 fi
 ID=$(gdbus call "${NOTIFY_ARGS[@]}"  --method org.freedesktop.Notifications.Notify "volume-control" "$REPLACE_ID" "/usr/share/notify-osd/icons/hicolor/scalable/status/notification-audio-volume-$ICON.svg" "$VOLUME %" "" [] "$HINTS" "int32 2000" | sed 's/(uint32 \(.*\),)/\1/')
 
-echo $ID > $HOME/.config/i3/.volume-notification-lock
+echo $ID >&3
+flock -u 3
+exec 3>&-
 sleep 2 && [ "$(echo "$(date +'%s') - $(stat $HOME/.config/i3/.volume-notification-lock -c "%Z")" | bc)" -gt "1" ] && rm $HOME/.config/i3/.volume-notification-lock &
